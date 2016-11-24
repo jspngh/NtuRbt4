@@ -20,6 +20,15 @@ Image::Image(Mat image)
 {
     cvImage = image;
 
+    // if the image is a colored image, first convert
+    if(image.channels() == 3)
+    {
+        Mat frame_bw;
+        cvtColor(image, frame_bw, COLOR_BGR2GRAY);
+        imshow("edges", frame_bw);
+        cvImage = frame_bw;
+    }
+    
     reading_error = cvImage.data == NULL;
     if (reading_error)
         return;

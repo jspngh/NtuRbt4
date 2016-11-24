@@ -19,69 +19,112 @@
 using namespace cv;
 using namespace std;
 
-void process_image(Mat frame)
+int thresh = 100;
+int max_thresh = 255;
+RNG rng(12345);
+int min_size = 15;
+
+
+void read_templates()
 {
-    Image* img = new Image(frame);
-    if (img->reading_error)
+    path
+
+}
+
+void canny(Mat src_gray)
+{
+    Mat canny_output;
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+
+    /// Detect edges using canny
+    Canny( src_gray, canny_output, thresh, thresh*2, 3 );
+    /// Find contours
+    findContours( canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+
+    /// Draw contours
+    Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
+    for( int i = 0; i< contours.size(); i++ )
     {
-        cout << "Could not open the image, is the name correct?" << endl;
+        float size = contourArea(contours.at(i));
+        Scalar color;
+        if (size > min_size)
+        {
+            color = Scalar(255,0,0);
+            drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
+            cout << size << endl;
+        }
     }
 
-    img->thresholding();
-    img->segmentation();
-    img->find_regions();
-
-    img->print_region_metadata();
-
-    // visualization of the result
-    img->display_region_metadata();
-
-    // store the resulting image
-    //cv::imwrite("./images/er7-3-result.jpg", img->get_cvImage_result());
-
-    delete img; 
+    /// Show in a window
+    namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
+    imshow( "Contours", drawing );
+    waitKey(0);
 }
 
 Mat crop_image(Mat frame)
 {
-    int offset_x = 80;
-    int offset_y = 60;
+    int offset_x = 90;
+    int offset_y = 130;
+
+    int width = frame.cols;
+    int height = frame.rows;
 
     cv::Rect roi;
     roi.x = offset_x;
     roi.y = offset_y;
-    roi.width = frame.size().width - (offset_x);
-    roi.height = frame.size().height - (offset_y);
+    roi.width = width - offset_x;
+    roi.height = height - offset_y;
 
-    /* Crop the original image to the defined ROI */
-
-    cv::Mat crop = frame(roi);
-    cv::imshow("crop", crop);
-    cv::waitKey(0);
-
-    cv::imwrite("noises_cropped.png", crop);
-
-    return crop;
+    return frame(roi);
 }
+
+
+void process_image(Mat frame)
+{
+    frame = crop_image(frame);
+    Image* img = new Image(frame);
+
+    canny(img->cvImage);
+
+    //img->thresholding();
+    //img->segmentation();
+    //img->find_regions();
+
+    //img->print_region_metadata();
+
+    // visualization of the result
+    //img->display_region_metadata();
+
+    delete img; 
+}
+
 
 int main(int, char**)
 {
-    VideoCapture cap(0); // open the default camera
-    if(!cap.isOpened())  // check if we succeeded
-        return -1;
-
-    Mat frame_bw, frame;
-    namedWindow("edges",1);
-    for(;;)
+    for(int i=1; i <= 8; i++)
     {
-        cap >> frame; // get a new frame from camera
-        cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
-        imshow("edges", frame_bw);
-        //if(waitKey(30) >= 0) break;
-        waitKey(0);
-        //Mat crop = crop_image(frame_bw);
-        //process_image(crop);
+        string path = "res/calib" + to_string(i) + ".png";
+        cout << "processing: " << path << endl;
+        Mat m = imread(path);
+        process_image(m);
     }
+
+
+    //VideoCapture cap(0); 
+    //if(!cap.isOpened()) return -1;
+
+    //Mat frame_bw, frame;
+    //namedWindow("edges",1);
+    //while(1)
+    //{
+        //cap >> frame; // get a new frame from camera
+        //cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
+        //imshow("edges", frame_bw);
+        //waitKey(1);
+        ////Mat crop = crop_image(frame_bw);
+        ////process_image(crop);
+    //}
     
     return 0;
 }
