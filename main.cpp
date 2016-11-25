@@ -35,9 +35,26 @@ int main(int, char**)
     char speed[] = "SETLINESPEED 100";
     svr.sendCommand(speed, cl_sockfd);
     sleep(3);
-    char movt[] = "MOVT 100 0 0";
-    svr.sendCommand(movt, cl_sockfd);
-    sleep(3);
+
+    int c, x, y;
+
+    while(true)
+    {
+        cout << "0 -  continue\nOtherwise - stop" << endl;
+        cin >> c;
+        if (c)
+            break;
+        cout << "Please enter x: " << endl;
+        cin >> x;
+        cout << "Please enter y: " << endl;
+        cin >> y;
+
+        string command = "MOVT " + to_string(x) + to_string(y);
+        const char* movt = command.c_str();
+        svr.sendCommand(movt, cl_sockfd);
+        sleep(3);
+    }
+
     char command[] = "GOHOME";
     svr.sendCommand(command, cl_sockfd);
 

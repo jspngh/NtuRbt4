@@ -72,7 +72,7 @@ int Server::openSocket()
     return cl_sockfd;
 }
 
-int Server::sendCommand(char* sendbuf, int client_sock)
+int Server::sendCommand(const char* sendbuf, int client_sock)
 {
     cout << "Sending Command: " << sendbuf << endl;
     int snd_result = 0;

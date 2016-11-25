@@ -3,7 +3,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT 4000
-#define DEFAULT_INTERFACE "net0"
+#define DEFAULT_INTERFACE "wlp2s0"
 
 #include <netinet/in.h>
 #include <string>
@@ -16,7 +16,7 @@ public:
 
     Server();
     int openSocket();
-    int sendCommand(char* sendbuf, int client_sock);
+    int sendCommand(const char* sendbuf, int client_sock);
     void error(std::string msg);
 
 };
