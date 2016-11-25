@@ -15,6 +15,7 @@
 #include <string>
 
 #include "image.hpp"
+#include "robot.hpp"
 
 #define NUM_TEMPLATES 3
 
@@ -170,29 +171,35 @@ int main(int, char**)
 {
     //read_templates();
 
-    for(int i=1; i <= 8; i++)
-    {
-        string path = "res/calib" + to_string(i) + ".png";
-        cout << "processing: " << path << endl;
-        Mat m = imread(path);
-        process_image(m);
-    }
-
-
-    //VideoCapture cap(0); 
-    //if(!cap.isOpened()) return -1;
-
-    //Mat frame_bw, frame;
-    //namedWindow("edges",1);
-    //while(1)
+    //for(int i=1; i <= 8; i++)
     //{
-        //cap >> frame; // get a new frame from camera
-        //cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
-        //imshow("edges", frame_bw);
-        //waitKey(1);
-        ////Mat crop = crop_image(frame_bw);
-        ////process_image(crop);
+        //string path = "res/calib" + to_string(i) + ".png";
+        //cout << "processing: " << path << endl;
+        //Mat m = imread(path);
+        //process_image(m);
     //}
+    
+    int x, y;
+    Robot *r = new Robot();
+    r->img2robot(575,215,x,y);
+    cout << x << endl;
+    cout << y << endl;
+
+
+    VideoCapture cap(1); 
+    if(!cap.isOpened()) return -1;
+
+    Mat frame_bw, frame;
+    namedWindow("edges",1);
+    while(1)
+    {
+        cap >> frame; // get a new frame from camera
+        //cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
+        imshow("edges", frame);
+        waitKey(0);
+        //Mat crop = crop_image(frame_bw);
+        //process_image(crop);
+    }
     
     return 0;
 }
