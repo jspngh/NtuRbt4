@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(hw4)
 find_package( OpenCV REQUIRED )
-add_executable( main main.cpp image.cpp region.cpp robot.cpp)
+add_executable( main main.cpp image.cpp region.cpp server.cpp robot.cpp vision.cpp)
 set_property(TARGET main PROPERTY CXX_STANDARD 11)
 target_link_libraries( main ${OpenCV_LIBS} )
