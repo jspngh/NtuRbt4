@@ -2,6 +2,7 @@
 
 #include "image.hpp"
 #include "vision.hpp"
+#include "tuple"
 
 using namespace cv;
 using namespace std;
@@ -27,7 +28,7 @@ vector<vector<Point>> filter_objects(vector<vector<Point>> contours)
         double area=contourArea(contours[i],false);
         if (area < MIN_AREA_THRESHOLD)
             continue;
-       
+
         // check if enclosing rectangle is big enough
         Rect rect = boundingRect(contours[i]);
         area = rect.width * rect.height;
@@ -47,7 +48,7 @@ vector<vector<Point>> filter_objects(vector<vector<Point>> contours)
                 break;
             }
         }
-        
+
         if (accepted)
             filtered.push_back(contours[i]);
     }
@@ -63,17 +64,19 @@ vector<vector<Point>> find_objects(Mat gray)
     vector<Vec4i> hierarchy;
 
     Canny(gray, canny_output, 50, 150, 3);
+    dilate(canny_output, canny_output, Mat());
+    erode(canny_output, canny_output, Mat());
     findContours(canny_output, objects, hierarchy, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
     objects = filter_objects(objects);
-    
+
     return objects;
 }
 
 
 Mat crop_image(Mat frame)
 {
-    int offset_x = 90;
-    int offset_y = 130;
+    int offset_x = 100;
+    int offset_y = 40;
 
     int width = frame.cols;
     int height = frame.rows;
@@ -88,58 +91,55 @@ Mat crop_image(Mat frame)
 }
 
 
-void process_image(Mat frame)
+vector<tuple<Point,double>>  process_image(Mat frame)
 {
     frame = crop_image(frame);
-    Image* img = new Image(frame);
+    cvtColor(frame, frame, COLOR_BGR2GRAY);
 
-    vector<vector<Point>> contours = find_objects(img->cvImage);
+    vector<vector<Point>> contours = find_objects(frame);
 
     // Draw contours
-    Mat drawing = Mat::zeros(img->cvImage.size(), CV_8UC3);
+    Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
     cv::RNG rng(0);
     for( int i = 0; i< contours.size(); i++ )
     {
+        //matching_template(contours[i]);
         Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255));
-        drawContours(drawing, contours, i, color, CV_FILLED);
-        //circle(drawing, get_mass_center(contours[i]), 2, color, -1, 8, 0);
+        Scalar color_black = Scalar(255,255,255);
+        drawContours(drawing, contours, i, color_black, CV_FILLED);
     }
 
-    namedWindow("Contours", CV_WINDOW_AUTOSIZE);
-    imshow("Contours", drawing);
-    waitKey(0);
+    erode(drawing, drawing, Mat());
+    dilate(drawing, drawing, Mat());
 
-    delete img;
+    Image *processed_img = new Image(drawing);
+    processed_img->thresholding();
+    processed_img->segmentation();
+    processed_img->find_regions();
+
+    processed_img->print_region_metadata();
+
+    // visualization of the result
+    processed_img->display_region_metadata();
+
+    return processed_img->get_region_metadata();
 }
 
-void read_templates()
-{
-    string path = "templates/";
-    for (int i=1; i<=NUM_TEMPLATES; i++)
-    {
-        string templ_file = path + "template" + to_string(i) + ".png";
-        Mat templ_im = imread(templ_file);
-        Mat frame_bw;
-        cvtColor(templ_im, frame_bw, COLOR_BGR2GRAY);
-        //find_moments(frame_bw);
-    }
-
-}
 
 void run_vision()
 {
-    //read_templates();
+    //process_templates();
 
-    for(int i=1; i <= 8; i++)
-    {
-        string path = "res/calib" + to_string(i) + ".png";
-        cout << "processing: " << path << endl;
-        Mat m = imread(path);
-        process_image(m);
-    }
+    //for(int i=1; i <= 10; i++)
+    //{
+        //string path = "res/calib2_" + to_string(i) + ".png";
+        //cout << "processing: " << path << endl;
+        //Mat m = imread(path);
+        //cout << process_image(m).size() << endl;
+    //}
 
-    //Mat m = imread("test1.png");
-    //process_image(m);
+    Mat m = imread("test1.png");
+    process_image(m);
 
     //VideoCapture cap(0);
     //if(!cap.isOpened()) return -1;
@@ -148,11 +148,11 @@ void run_vision()
     //namedWindow("edges",1);
     //while(1)
     //{
-        //cap >> frame; // get a new frame from camera
-        //cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
-        //imshow("edges", frame_bw);
-        //waitKey(1);
-        ////Mat crop = crop_image(frame_bw);
-        ////process_image(crop);
+    //cap >> frame; // get a new frame from camera
+    //cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
+    //imshow("edges", frame_bw);
+    //waitKey(1);
+    ////Mat crop = crop_image(frame_bw);
+    ////process_image(crop);
     //}
 }

@@ -10,14 +10,16 @@
 
 class Server
 {
-public:
-    int client_sock;
-    struct in_addr ip_address;
+    public:
+        int client_sock;
+        struct in_addr ip_address;
 
-    Server();
-    int openSocket();
-    int sendCommand(const char* sendbuf, int client_sock);
-    void error(std::string msg);
+        Server();
+        ~Server();
+        int openSocket();
+        int closeSocket();
+        int sendCommand(const char* sendbuf, int client_sock);
+        void error(std::string msg);
 
 };
 

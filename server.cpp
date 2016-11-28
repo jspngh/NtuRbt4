@@ -38,6 +38,12 @@ Server::Server()
     client_sock = -1;
 }
 
+Server::~Server()
+{
+    if(client_sock > -1)
+        closeSocket();
+}
+
 int Server::openSocket()
 {
     int svr_sockfd, cl_sockfd;
@@ -54,15 +60,15 @@ int Server::openSocket()
     svr_addr.sin_port = htons(DEFAULT_PORT);
 
     if (bind(svr_sockfd,
-             (struct sockaddr *) &svr_addr,
-             sizeof(svr_addr)) < 0)
+                (struct sockaddr *) &svr_addr,
+                sizeof(svr_addr)) < 0)
         error("ERROR on binding");
 
     listen(svr_sockfd,5);
     cl_len = sizeof(cl_addr);
     cl_sockfd = accept(svr_sockfd,
-                       (struct sockaddr *) &cl_addr,
-                       &cl_len);
+            (struct sockaddr *) &cl_addr,
+            &cl_len);
     if (cl_sockfd < 0)
         error("ERROR on accept");
 
@@ -72,8 +78,47 @@ int Server::openSocket()
     return cl_sockfd;
 }
 
-int Server::sendCommand(const char* sendbuf, int client_sock)
+int Server::closeSocket()
 {
+    int result = shutdown(client_sock, SHUT_WR);
+
+    if (result == -1)
+        printf("shutdown failed with error: %d\n", errno);
+
+    result = close(client_sock);
+    client_sock = -1;
+    return result;
+}
+
+int Server::sendCommand(const char* sendbuf, int socket)
+{
+    /*
+     * Interesting commands
+     *
+     * p 89
+     * SETLINESPEED
+     *
+     * p 90
+     * MOVE commands
+     *
+     * p 94
+     * ROTATEX/Y/Z
+     *
+     * p 95
+     * WAIT
+     *
+     * p 97
+     * HOLD
+     * CONTINUE
+     *
+     * p 100
+     * GETDEG
+     * GETPOS
+     *
+     * p 102
+     * GETX, GETJ1,...
+     */
+
     cout << "Sending Command: " << sendbuf << endl;
     int snd_result = 0;
     int rcv_result = 0;
@@ -82,7 +127,7 @@ int Server::sendCommand(const char* sendbuf, int client_sock)
     int RTT_threshold = 1000;
 
     // send command to robot arm
-    snd_result = write(client_sock, sendbuf, strlen(sendbuf)+1);
+    snd_result = write(socket, sendbuf, strlen(sendbuf)+1);
     if (snd_result < 0)
     {
         error("ERROR writing to socket");
@@ -92,7 +137,7 @@ int Server::sendCommand(const char* sendbuf, int client_sock)
 
     do
     {
-        rcv_result = read(client_sock, rcvbuf, DEFAULT_BUFLEN-1);
+        rcv_result = read(socket, rcvbuf, DEFAULT_BUFLEN-1);
         cout << "In the do while loop" << endl;
         counter++;
     }while(rcv_result == 0 && counter < RTT_threshold);

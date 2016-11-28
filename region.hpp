@@ -8,25 +8,25 @@
 
 class Region
 {
-public:
-    int **image;
+    public:
+        int **image;
 
-    int id;
+        int id;
 
-    int top; // y coordinate
-    int bottom; // y coordinate
-    int left; // x coordinate
-    int right; // x coordinate
+        int top; // y coordinate
+        int bottom; // y coordinate
+        int left; // x coordinate
+        int right; // x coordinate
 
-    std::pair<double, double> centroid; // (x_c, y_c)
-    double principle_angle; // phi
+        std::pair<double, double> centroid; // (x_c, y_c)
+        double principle_angle; // phi
 
-    Region(int **image, int id, int top, int bottom, int left, int right);
-    void find_centroid();
-    void find_principle_angle();
+        Region(int **image, int id, int top, int bottom, int left, int right);
+        void find_centroid();
+        void find_principle_angle();
 
-    int moment(int k, int j); // moment kj
-    int central_moment(int k, int j); // central moment kj
+        int moment(int k, int j); // moment kj
+        int central_moment(int k, int j); // central moment kj
 };
 
 #endif

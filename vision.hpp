@@ -9,7 +9,6 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 
-
 void run_vision();
 
 #endif
