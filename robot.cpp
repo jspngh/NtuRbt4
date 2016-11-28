@@ -19,7 +19,7 @@ Robot::~Robot()
 
 Server* Robot::getServer()
 {
-  return server;
+    return server;
 }
 
 void Robot::grip(RobotCoord c)
@@ -85,13 +85,13 @@ void Robot::manual_control()
 
 RobotCoord Robot::img2robot_v(int x_im, int y_im)
 {
-	float a1 = -477;
-	float a2 = 1.15;
-	float a3 = 0.05;
+    float a1 = -477;
+    float a2 = 1.15;
+    float a3 = 0.05;
 
-	float b1 = 683.0;
-	float b2 = 0.048;
-	float b3 = -1.115;
+    float b1 = 683.0;
+    float b2 = 0.048;
+    float b3 = -1.115;
 
     // float a1 = -479.945160192;
     // float a2 = 1.18393057953;
@@ -109,13 +109,13 @@ RobotCoord Robot::img2robot_v(int x_im, int y_im)
 
 RobotCoord Robot::img2robot_l(int x_im, int y_im)
 {
-	float a1 = -461.863;
-	float a2 = 1.10843;
-	float a3 = 0.08355;
+    float a1 = -461.863;
+    float a2 = 1.10843;
+    float a3 = 0.08355;
 
-	float b1 = 680.783;
-	float b2 = 0.0468;
-	float b3 = -1.0868;
+    float b1 = 680.783;
+    float b2 = 0.0468;
+    float b3 = -1.0868;
 
     RobotCoord result;
     result.x = a1 + a2 * x_im + a3 * y_im;
@@ -125,9 +125,9 @@ RobotCoord Robot::img2robot_l(int x_im, int y_im)
 
 RobotCoord Robot::img2robot_w(int x_im, int y_im)
 {
-	float a = 1.128;
-	float b = 456.8;
-	float c = 352.2;
+    float a = 1.128;
+    float b = 456.8;
+    float c = 352.2;
 
     RobotCoord result;
     result.x = x_im * a - b;

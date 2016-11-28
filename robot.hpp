@@ -11,19 +11,19 @@ struct RobotCoord
 
 class Robot
 {
-public:
-	Robot();
-	~Robot();
+    public:
+        Robot();
+        ~Robot();
 
-    Server* getServer();
-    void grip(RobotCoord c);
-    void manual_control();
+        Server* getServer();
+        void grip(RobotCoord c);
+        void manual_control();
 
-	RobotCoord img2robot_v(int x_im, int y_im);
-	RobotCoord img2robot_l(int x_im, int y_im);
-	RobotCoord img2robot_w(int x_im, int y_im);
-private:
-    Server* server;
+        RobotCoord img2robot_v(int x_im, int y_im);
+        RobotCoord img2robot_l(int x_im, int y_im);
+        RobotCoord img2robot_w(int x_im, int y_im);
+    private:
+        Server* server;
 };
 
 #endif

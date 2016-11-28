@@ -60,15 +60,15 @@ int Server::openSocket()
     svr_addr.sin_port = htons(DEFAULT_PORT);
 
     if (bind(svr_sockfd,
-             (struct sockaddr *) &svr_addr,
-             sizeof(svr_addr)) < 0)
+                (struct sockaddr *) &svr_addr,
+                sizeof(svr_addr)) < 0)
         error("ERROR on binding");
 
     listen(svr_sockfd,5);
     cl_len = sizeof(cl_addr);
     cl_sockfd = accept(svr_sockfd,
-                       (struct sockaddr *) &cl_addr,
-                       &cl_len);
+            (struct sockaddr *) &cl_addr,
+            &cl_len);
     if (cl_sockfd < 0)
         error("ERROR on accept");
 

@@ -25,29 +25,29 @@ using namespace std;
 
 class Image
 {
-public:
-    Mat cvImage;
-    Mat cvImage_result;
-    int** mImage;
-    int nr_regions;
-    Region** regions;
-    bool reading_error;
+    public:
+        Mat cvImage;
+        Mat cvImage_result;
+        int** mImage;
+        int nr_regions;
+        Region** regions;
+        bool reading_error;
 
-    Image(string file_loc);
-    Image(Mat image);
-    ~Image();
+        Image(string file_loc);
+        Image(Mat image);
+        ~Image();
 
-    void thresholding();
-    void segmentation();
-    void find_regions();
+        void thresholding();
+        void segmentation();
+        void find_regions();
 
-    void print_debug_info();
-    void display_region_metadata();
-    void print_region_metadata();
-    Mat get_cvImage_result();
-private:
-    // region growing algorithm
-    bool grow_region(int k, int j, int i);
+        void print_debug_info();
+        void display_region_metadata();
+        void print_region_metadata();
+        Mat get_cvImage_result();
+    private:
+        // region growing algorithm
+        bool grow_region(int k, int j, int i);
 };
 
 #endif

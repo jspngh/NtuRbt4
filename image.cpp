@@ -28,7 +28,7 @@ Image::Image(Mat image)
         imshow("edges", frame_bw);
         cvImage = frame_bw;
     }
-    
+
     reading_error = cvImage.data == NULL;
     if (reading_error)
         return;
@@ -202,7 +202,7 @@ bool Image::grow_region(int k, int j, int i)
 void Image::print_debug_info()
 {
     cout    << "Image [rows x cols]: ["
-            << cvImage.rows << " x " << cvImage.cols << "]" << endl;
+        << cvImage.rows << " x " << cvImage.cols << "]" << endl;
 
     for (int y = 0; y < cvImage.rows; ++y)
     {
@@ -221,13 +221,13 @@ void Image::print_debug_info()
         double phi = regions[i]->principle_angle;
 
         cout << "id: " << regions[i]->id
-             << ", top: " << regions[i]->top
-             << ", bottom: " << regions[i]->bottom
-             << ", left: " << regions[i]->left
-             << ", right: " << regions[i]->right
-             << "\ncenter: " << x_c  << " " << y_c
-             << "\nphi: " << phi
-             << endl;
+            << ", top: " << regions[i]->top
+            << ", bottom: " << regions[i]->bottom
+            << ", left: " << regions[i]->left
+            << ", right: " << regions[i]->right
+            << "\ncenter: " << x_c  << " " << y_c
+            << "\nphi: " << phi
+            << endl;
     }
 }
 
@@ -242,7 +242,7 @@ void Image::print_region_metadata()
         double phi = regions[i]->principle_angle;
 
         cout << round(x_c)  << " " << round(y_c) << " "
-             << round((phi*180.0/3.141592)) << endl;
+            << round((phi*180.0/3.141592)) << endl;
     }
 }
 
