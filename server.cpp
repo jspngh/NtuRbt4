@@ -138,7 +138,6 @@ int Server::sendCommand(const char* sendbuf, int socket)
     do
     {
         rcv_result = read(socket, rcvbuf, DEFAULT_BUFLEN-1);
-        cout << "In the do while loop" << endl;
         counter++;
     }while(rcv_result == 0 && counter < RTT_threshold);
 
@@ -154,9 +153,15 @@ int Server::sendCommand(const char* sendbuf, int socket)
         }
     }
 
-    printf("Here is the message: %s\n", rcvbuf);
+    printf("response: %s\n", rcvbuf);
+    last_response = rcvbuf;
 
     return 0;
+}
+
+string Server::getLastResponse()
+{
+    return last_response;
 }
 
 void Server::error(string msg)

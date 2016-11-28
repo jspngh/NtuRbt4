@@ -13,9 +13,9 @@ int main(int, char**)
     // The following lines give an example of how to send a command.
     // You can find commends in "Robot Arm Manual.pdf", chap 3, section O-(5)
 
-    run_vision();
+    // run_vision();
     Robot r;
-    r.grip({1,2});
+    r.grip({1,2,3});
 
     return 0;
 }

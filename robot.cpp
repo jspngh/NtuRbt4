@@ -1,7 +1,9 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <math.h>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "robot.hpp"
 
@@ -22,6 +24,48 @@ Server* Robot::getServer()
     return server;
 }
 
+RobotCoord Robot::getCurrentPos()
+{
+    int sockfd;
+    if (server->client_sock > -1)
+        sockfd = server->client_sock;
+    else
+        sockfd = server->openSocket();
+
+    string command = "GETPOS X Y Z A B C";
+    const char* speed = command.c_str();
+    server->sendCommand(speed, sockfd);
+    string response = server->getLastResponse();
+    RobotCoord result;
+    if (response.compare("ERR") == 0)
+    {
+        printf("%s\n", "GETPOS returned error");
+        return result;
+    }
+
+    int x_pos = response.find(' ');
+    result.x = stoi(response.substr(0, x_pos));
+    int y_pos = response.find(' ', x_pos + 1);
+    result.y = stoi(response.substr(x_pos + 1, y_pos));
+    int z_pos = response.find(' ', y_pos + 1);
+    result.z = stoi(response.substr(y_pos + 1, z_pos));
+    return result;
+}
+
+void Robot::setSpeed(int v)
+{
+    int sockfd;
+    if (server->client_sock > -1)
+        sockfd = server->client_sock;
+    else
+        sockfd = server->openSocket();
+
+    string command = "SETLINESPEED " + to_string(v);
+    const char* speed = command.c_str();
+    server->sendCommand(speed, sockfd);
+    sleep(3);
+}
+
 void Robot::grip(RobotCoord c)
 {
     int sockfd;
@@ -30,17 +74,46 @@ void Robot::grip(RobotCoord c)
     else
         sockfd = server->openSocket();
 
-    char speed[] = "SETLINESPEED 100";
-    server->sendCommand(speed, sockfd);
-    sleep(3);
-
-    string command = "MOVT " + to_string(c.x) + " " + to_string(c.y);
+    string command = "MOVT " + to_string(c.x) + " " + to_string(c.y) + " " + to_string(part_height);
     const char* movt = command.c_str();
     server->sendCommand(movt, sockfd);
     sleep(3);
+
+    command = "MOVT # # " + to_string(grip_height);
+    const char* grip = command.c_str();
+    server->sendCommand(grip, sockfd);
+    sleep(3);
 }
 
-void Robot::manual_control()
+void Robot::goHome()
+{
+    int sockfd;
+    if (server->client_sock > -1)
+        sockfd = server->client_sock;
+    else
+        sockfd = server->openSocket();
+
+    string command = "GOHOME";
+    const char* movt = command.c_str();
+    server->sendCommand(movt, sockfd);
+    sleep(10);
+}
+
+void Robot::move2side()
+{
+    int sockfd;
+    if (server->client_sock > -1)
+        sockfd = server->client_sock;
+    else
+        sockfd = server->openSocket();
+
+    string command = "MOVT " + to_string(picture_x_pos) + " # " + to_string(part_height);
+    const char* grip = command.c_str();
+    server->sendCommand(grip, sockfd);
+    sleep(3);
+}
+
+void Robot::manualControl()
 {
     int sockfd;
     if (server->client_sock > -1)
@@ -81,6 +154,23 @@ void Robot::manual_control()
     char openGripper[] = "OUTPUT 48 OFF";
     server->sendCommand(openGripper, sockfd);
     sleep(5);
+}
+
+void Robot::wait_pos_reached(RobotCoord pos)
+{
+    RobotCoord current_pos = getCurrentPos();
+    float sq_dist = pow(pos.x - current_pos.x, 2) +
+                    pow(pos.y - current_pos.y, 2) +
+                    pow(pos.z - current_pos.z, 2);
+
+    while (sqrt(sq_dist) > 99)
+    {
+        sleep(2);
+        RobotCoord current_pos = getCurrentPos();
+        float sq_dist = pow(pos.x - current_pos.x, 2) +
+                        pow(pos.y - current_pos.y, 2) +
+                        pow(pos.z - current_pos.z, 2);
+    }
 }
 
 RobotCoord Robot::img2robot_v(int x_im, int y_im)
