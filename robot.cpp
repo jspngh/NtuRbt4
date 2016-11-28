@@ -85,13 +85,21 @@ void Robot::manual_control()
 
 RobotCoord Robot::img2robot_v(int x_im, int y_im)
 {
-    float a1 = -479.945160192;
-    float a2 = 1.18393057953;
-    float a3 = 0.00608376171349;
+	float a1 = -477;
+	float a2 = 1.15;
+	float a3 = 0.05;
 
-    float b1 = 784.002566698;
-    float b2 = 0.0859078821404;
-    float b3 = -1.14523556393;
+	float b1 = 683.0;
+	float b2 = 0.048;
+	float b3 = -1.115;
+
+    // float a1 = -479.945160192;
+    // float a2 = 1.18393057953;
+    // float a3 = 0.00608376171349;
+
+    // float b1 = 784.002566698;
+    // float b2 = 0.0859078821404;
+    // float b3 = -1.14523556393;
 
     RobotCoord result;
     result.x = a1 + a2 * x_im + a3 * y_im;

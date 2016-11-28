@@ -9,13 +9,6 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 
-#define NUM_TEMPLATES 3
-
-int thresh = 100;
-int max_thresh = 255;
-cv::RNG rng(0);
-int min_size = 15;
-
 void run_vision();
 
 #endif

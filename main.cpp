@@ -1,17 +1,5 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <math.h>
-#include <time.h>
-#include <iostream>
-#include <string>
-#include <stack>
-
 #include "vision.hpp"
 #include "robot.hpp"
-
-
-using namespace cv;
-using namespace std;
 
 int main(int, char**)
 {
@@ -24,11 +12,8 @@ int main(int, char**)
     // 4. Move the arm to the grasping pose by sendCommand() function.
     // The following lines give an example of how to send a command.
     // You can find commends in "Robot Arm Manual.pdf", chap 3, section O-(5)
-    //
-    // 5. Control the gripper to grasp the object.
-    // The following lines give an example of how to control the gripper.
 
-    // run_vision();
+    run_vision();
     Robot r;
     r.grip({1,2});
 
