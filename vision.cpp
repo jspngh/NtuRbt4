@@ -63,7 +63,7 @@ vector<vector<Point>> find_objects(Mat gray)
     vector<Vec4i> hierarchy;
 
     Canny(gray, canny_output, 50, 150, 3);
-    findContours(canny_output, objects, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(canny_output, objects, hierarchy, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
     objects = filter_objects(objects);
     
     return objects;
@@ -73,7 +73,7 @@ vector<vector<Point>> find_objects(Mat gray)
 Mat crop_image(Mat frame)
 {
     int offset_x = 90;
-    int offset_y = 50;
+    int offset_y = 130;
 
     int width = frame.cols;
     int height = frame.rows;
@@ -101,8 +101,8 @@ void process_image(Mat frame)
     for( int i = 0; i< contours.size(); i++ )
     {
         Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255));
-        drawContours(drawing, contours, i, color);
-        circle(drawing, get_mass_center(contours[i]), 2, color, -1, 8, 0);
+        drawContours(drawing, contours, i, color, CV_FILLED);
+        //circle(drawing, get_mass_center(contours[i]), 2, color, -1, 8, 0);
     }
 
     namedWindow("Contours", CV_WINDOW_AUTOSIZE);
@@ -130,16 +130,16 @@ void run_vision()
 {
     //read_templates();
 
-    //for(int i=1; i <= 8; i++)
-    //{
-        //string path = "res/calib" + to_string(i) + ".png";
-        //cout << "processing: " << path << endl;
-        //Mat m = imread(path);
-        //process_image(m);
-    //}
+    for(int i=1; i <= 8; i++)
+    {
+        string path = "res/calib" + to_string(i) + ".png";
+        cout << "processing: " << path << endl;
+        Mat m = imread(path);
+        process_image(m);
+    }
 
-    Mat m = imread("test1.png");
-    process_image(m);
+    //Mat m = imread("test1.png");
+    //process_image(m);
 
     //VideoCapture cap(0);
     //if(!cap.isOpened()) return -1;
