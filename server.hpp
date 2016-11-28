@@ -13,12 +13,14 @@ class Server
     public:
         int client_sock;
         struct in_addr ip_address;
+        std::string last_response;
 
         Server();
         ~Server();
         int openSocket();
         int closeSocket();
         int sendCommand(const char* sendbuf, int client_sock);
+        std::string getLastResponse();
         void error(std::string msg);
 
 };

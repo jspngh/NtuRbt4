@@ -14,8 +14,8 @@ int main(int, char**)
     // You can find commends in "Robot Arm Manual.pdf", chap 3, section O-(5)
 
     run_vision();
-    //Robot r;
-    //r.grip({1,2});
+    Robot r;
+    r.grip({1,2});
 
     return 0;
 }
