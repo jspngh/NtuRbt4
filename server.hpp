@@ -15,7 +15,9 @@ public:
     struct in_addr ip_address;
 
     Server();
+    ~Server();
     int openSocket();
+    int closeSocket();
     int sendCommand(const char* sendbuf, int client_sock);
     void error(std::string msg);
 
