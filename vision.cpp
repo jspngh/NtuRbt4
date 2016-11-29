@@ -137,19 +137,21 @@ vector<pair<Point,double>> get_objects()
         //cout << process_image(m).size() << endl;
     //}
 
-    //Mat m = imread("test1.png");
+    Mat m = imread("test1.png");
     //process_image(m);
 
-    VideoCapture cap(0);
-    if(!cap.isOpened()) 
-    {
-        cout << "Could not open external webcam." << endl;
-        return result;
-    }
+    //VideoCapture cap(0);
+    //if(!cap.isOpened()) 
+    //{
+        //cout << "Could not open external webcam." << endl;
+        //return result;
+    //}
 
-    Mat frame;
-    cap >> frame; 
-    imshow("Image used for processing", frame);
+    //Mat frame;
+    //cap >> frame; 
+    cv::namedWindow("Image used for processing");
+    imshow("Image used for processing", m);
     waitKey(0);
-    return process_image(frame);
+    cv::destroyWindow("Image used for processing");
+    return process_image(m);
 }

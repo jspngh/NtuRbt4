@@ -46,6 +46,8 @@ int main(int, char**)
         r.grip();
         
         // move object to drop zone
+        
+        it++;
     }
 
     return 0;
