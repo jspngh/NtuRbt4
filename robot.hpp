@@ -19,7 +19,8 @@ class Robot
         Server* getServer();
         RobotCoord getCurrentPos();
         void setSpeed(int v);
-        void grip(RobotCoord c);
+        void grip();
+        void move(RobotCoord c);
         void goHome();
         void move2side();
         void manualControl();
@@ -27,7 +28,7 @@ class Robot
         RobotCoord img2robot_v(int x_im, int y_im);
         RobotCoord img2robot_l(int x_im, int y_im);
         RobotCoord img2robot_w(int x_im, int y_im);
-    private:
+        
         Server* server;
 
         int base_height = 252;
@@ -36,8 +37,8 @@ class Robot
         int tooltip_length = 102;
         int gripper_height = 80; // approximated
 
-        int part_height = 40;
-        int grip_height = 20;
+        int part_height = -220;
+        int grip_height = -240;
         int picture_x_pos = -140;
 
         void wait_pos_reached(RobotCoord pos);

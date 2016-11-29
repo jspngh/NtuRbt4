@@ -1,5 +1,8 @@
 #include "image.hpp"
 
+using namespace cv;
+using namespace std;
+
 Image::Image(string file_loc)
 {
     cvImage = imread(file_loc, CV_LOAD_IMAGE_GRAYSCALE);
@@ -25,7 +28,6 @@ Image::Image(Mat image)
     {
         Mat frame_bw;
         cvtColor(image, frame_bw, COLOR_BGR2GRAY);
-        imshow("edges", frame_bw);
         cvImage = frame_bw;
     }
 
@@ -240,10 +242,27 @@ void Image::print_region_metadata()
         double x_c = regions[i]->centroid.first;
         double y_c = regions[i]->centroid.second;
         double phi = regions[i]->principle_angle;
+        double area = regions[i]->moment(0,0);
 
         cout << round(x_c)  << " " << round(y_c) << " "
-            << round((phi*180.0/3.141592)) << endl;
+            << round((phi*180.0/3.141592)) << " S: " << area << endl;
     }
+}
+
+vector<pair<Point,double>> Image::get_region_metadata()
+{
+
+    vector<pair<Point,double>> ret_regions;
+    for (int i = 0; i < nr_regions; ++i)
+    {
+        double x_c = regions[i]->centroid.first;
+        double y_c = regions[i]->centroid.second;
+        double phi = regions[i]->principle_angle;
+
+        Point center(x_c,y_c);
+        ret_regions.push_back(make_pair(center,phi));
+    }
+    return ret_regions;
 }
 
 void Image::display_region_metadata()

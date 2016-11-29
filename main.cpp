@@ -1,5 +1,11 @@
+#include <iostream>
+
 #include "vision.hpp"
 #include "robot.hpp"
+
+using namespace std;
+using namespace cv;
+
 
 int main(int, char**)
 {
@@ -13,9 +19,34 @@ int main(int, char**)
     // The following lines give an example of how to send a command.
     // You can find commends in "Robot Arm Manual.pdf", chap 3, section O-(5)
 
-    // run_vision();
     Robot r;
-    r.grip({1,2,3});
+
+    // move robot arm out of the way of the camera
+    r.move2side();
+    
+    // run vision
+    vector<pair<Point,double>> objects = get_objects();
+
+    cout << "number of objects found: " << objects.size() << endl;
+    
+    vector<pair<Point,double>>::iterator it = objects.begin();
+    while (it != objects.end())
+    {
+        // from image coordinate to robot coordinate
+        RobotCoord coord = r.img2robot_v(it->first.x, it->first.y); 
+    
+        // go to position above objects
+        r.move(coord);
+
+        // orient the gripper correctly
+        // TODO 
+        
+        // go down to grasp the object 
+        // grasp the object
+        r.grip();
+        
+        // move object to drop zone
+    }
 
     return 0;
 }

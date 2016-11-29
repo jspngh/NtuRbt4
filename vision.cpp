@@ -1,4 +1,3 @@
-#include <vector>
 
 #include "image.hpp"
 #include "vision.hpp"
@@ -63,7 +62,9 @@ vector<vector<Point>> find_objects(Mat gray)
     vector<Vec4i> hierarchy;
 
     Canny(gray, canny_output, 50, 150, 3);
-    findContours(canny_output, objects, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+    dilate(canny_output, canny_output, Mat());
+    erode(canny_output, canny_output, Mat());
+    findContours(canny_output, objects, hierarchy, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
     objects = filter_objects(objects);
 
     return objects;
@@ -72,8 +73,8 @@ vector<vector<Point>> find_objects(Mat gray)
 
 Mat crop_image(Mat frame)
 {
-    int offset_x = 90;
-    int offset_y = 50;
+    int offset_x = 100;
+    int offset_y = 40;
 
     int width = frame.cols;
     int height = frame.rows;
@@ -88,71 +89,67 @@ Mat crop_image(Mat frame)
 }
 
 
-void process_image(Mat frame)
+vector< pair<Point,double> >  process_image(Mat frame)
 {
     frame = crop_image(frame);
-    Image* img = new Image(frame);
+    cvtColor(frame, frame, COLOR_BGR2GRAY);
 
-    vector<vector<Point>> contours = find_objects(img->cvImage);
+    vector<vector<Point>> contours = find_objects(frame);
 
-    // Draw contours
-    Mat drawing = Mat::zeros(img->cvImage.size(), CV_8UC3);
+    // Make the image binary
+    Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
     cv::RNG rng(0);
     for( int i = 0; i< contours.size(); i++ )
     {
+        //matching_template(contours[i]);
         Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255));
-        drawContours(drawing, contours, i, color);
-        circle(drawing, get_mass_center(contours[i]), 2, color, -1, 8, 0);
+        Scalar color_black = Scalar(255,255,255);
+        drawContours(drawing, contours, i, color_black, CV_FILLED);
     }
+    
+    erode(drawing, drawing, Mat());
+    dilate(drawing, drawing, Mat());
 
-    namedWindow("Contours", CV_WINDOW_AUTOSIZE);
-    imshow("Contours", drawing);
-    waitKey(0);
+    Image *processed_img = new Image(drawing);
+    processed_img->thresholding();
+    processed_img->segmentation();
+    processed_img->find_regions();
 
-    delete img;
+    processed_img->print_region_metadata();
+
+    // visualization of the result
+    //processed_img->display_region_metadata();
+
+    return processed_img->get_region_metadata();
 }
 
-void read_templates()
+
+vector<pair<Point,double>> get_objects()
 {
-    string path = "templates/";
-    for (int i=1; i<=NUM_TEMPLATES; i++)
-    {
-        string templ_file = path + "template" + to_string(i) + ".png";
-        Mat templ_im = imread(templ_file);
-        Mat frame_bw;
-        cvtColor(templ_im, frame_bw, COLOR_BGR2GRAY);
-        //find_moments(frame_bw);
-    }
+    vector<pair<Point,double>> result;
+    //process_templates();
 
-}
-
-void run_vision()
-{
-    //read_templates();
-
-    //for(int i=1; i <= 8; i++)
+    //for(int i=1; i <= 10; i++)
     //{
-    //string path = "res/calib" + to_string(i) + ".png";
-    //cout << "processing: " << path << endl;
-    //Mat m = imread(path);
+        //string path = "res/calib2_" + to_string(i) + ".png";
+        //cout << "processing: " << path << endl;
+        //Mat m = imread(path);
+        //cout << process_image(m).size() << endl;
+    //}
+
+    //Mat m = imread("test1.png");
     //process_image(m);
-    //}
 
-    Mat m = imread("test1.png");
-    process_image(m);
+    VideoCapture cap(0);
+    if(!cap.isOpened()) 
+    {
+        cout << "Could not open external webcam." << endl;
+        return result;
+    }
 
-    //VideoCapture cap(0);
-    //if(!cap.isOpened()) return -1;
-
-    //Mat frame_bw, frame;
-    //namedWindow("edges",1);
-    //while(1)
-    //{
-    //cap >> frame; // get a new frame from camera
-    //cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
-    //imshow("edges", frame_bw);
-    //waitKey(1);
-    ////Mat crop = crop_image(frame_bw);
-    ////process_image(crop);
-    //}
+    Mat frame;
+    cap >> frame; 
+    imshow("Image used for processing", frame);
+    waitKey(0);
+    return process_image(frame);
 }
