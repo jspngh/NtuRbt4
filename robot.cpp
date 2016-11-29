@@ -77,17 +77,22 @@ void Robot::move(RobotCoord c)
     string command = "MOVT " + to_string(c.x) + " " + to_string(c.y) + " " + to_string(c.z);
     const char* movt = command.c_str();
     server->sendCommand(movt, sockfd);
-
 }
 
+void Robot::rotate_gripper(double angle)
+{
+    //TODO
+}
 
-void Robot::grip()
+void Robot::lift(int transport_height, double angle)
 {
     int sockfd;
     if (server->client_sock > -1)
         sockfd = server->client_sock;
     else
         sockfd = server->openSocket();
+
+    rotate_gripper(angle);
 
     string command = "MOVT # # " + to_string(grip_height);
     const char* move_down = command.c_str();
@@ -97,13 +102,36 @@ void Robot::grip()
     const char* close_grip = command.c_str();
     server->sendCommand(close_grip, sockfd);
 
-    command = "MOVT # # " + to_string(part_height);
+    command = "MOVT # # " + to_string(transport_height);
     const char* move_up = command.c_str();
     server->sendCommand(move_up, sockfd);
+
+}
+
+void Robot::place(int drop_height, double angle)
+{
+    int sockfd;
+    if (server->client_sock > -1)
+        sockfd = server->client_sock;
+    else
+        sockfd = server->openSocket();
+
+    rotate_gripper(angle);
+
+    string command = "MOVT # # " + to_string(drop_height);
+    const char* move_down = command.c_str();
+    server->sendCommand(move_down, sockfd);
 
     command = "OUTPUT 48 OFF";
     const char* open_grip = command.c_str();
     server->sendCommand(open_grip, sockfd);
+
+}
+
+void Robot::pickAndDrop(double angle)
+{
+    lift(hover_height, angle);
+    place(grip_height, angle);
 }
 
 void Robot::goHome()
@@ -128,7 +156,7 @@ void Robot::move2side()
     else
         sockfd = server->openSocket();
 
-    string command = "MOVT " + to_string(picture_x_pos) + " # " + to_string(part_height);
+    string command = "MOVT " + to_string(picture_x_pos) + " # " + to_string(hover_height);
     const char* grip = command.c_str();
     server->sendCommand(grip, sockfd);
     sleep(3);
@@ -215,7 +243,7 @@ RobotCoord Robot::img2robot_v(int x_im, int y_im)
     RobotCoord result;
     result.x = a1 + a2 * x_im + a3 * y_im;
     result.y = b1 + b2 * x_im + b3 * y_im;
-    result.z = part_height;
+    result.z = hover_height;
     return result;
 }
 
@@ -232,7 +260,7 @@ RobotCoord Robot::img2robot_l(int x_im, int y_im)
     RobotCoord result;
     result.x = a1 + a2 * x_im + a3 * y_im;
     result.y = b1 + b2 * x_im + b3 * y_im;
-    result.z = part_height;
+    result.z = hover_height;
     return result;
 }
 
@@ -245,6 +273,6 @@ RobotCoord Robot::img2robot_w(int x_im, int y_im)
     RobotCoord result;
     result.x = x_im * a - b;
     result.y = c - (y_im * a - c);
-    result.z = part_height;
+    result.z = hover_height;
     return result;
 }

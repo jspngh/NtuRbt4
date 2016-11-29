@@ -1,5 +1,4 @@
 
-#include "image.hpp"
 #include "vision.hpp"
 
 using namespace cv;
@@ -89,7 +88,7 @@ Mat crop_image(Mat frame)
 }
 
 
-vector< pair<Point,double> >  color_process_image(Mat frame)
+vector<Object>  color_process_image(Mat frame)
 {
     frame = crop_image(frame);
     vector<Mat> splited_frame;
@@ -118,7 +117,7 @@ vector< pair<Point,double> >  color_process_image(Mat frame)
 }
 
 
-vector< pair<Point,double> >  process_image(Mat frame)
+vector<Object>  process_image(Mat frame)
 {
     frame = crop_image(frame);
     cvtColor(frame, frame, COLOR_BGR2GRAY);
@@ -153,9 +152,9 @@ vector< pair<Point,double> >  process_image(Mat frame)
 }
 
 
-vector<pair<Point,double>> get_objects()
+vector<Object> get_objects()
 {
-    vector<pair<Point,double>> result;
+    vector<Object> result;
     //process_templates();
 
     //for(int i=1; i <= 10; i++)

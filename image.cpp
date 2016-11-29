@@ -249,18 +249,23 @@ void Image::print_region_metadata()
     }
 }
 
-vector<pair<Point,double>> Image::get_region_metadata()
+vector<Object> Image::get_region_metadata()
 {
 
-    vector<pair<Point,double>> ret_regions;
+    vector<Object> ret_regions;
     for (int i = 0; i < nr_regions; ++i)
     {
         double x_c = regions[i]->centroid.first;
         double y_c = regions[i]->centroid.second;
         double phi = regions[i]->principle_angle;
+        double area = regions[i]->moment(0,0);
 
         Point center(x_c,y_c);
-        ret_regions.push_back(make_pair(center,phi));
+        Object obj;
+        obj.center = center;
+        obj.area = area;
+        obj.angle = phi;
+        ret_regions.push_back(obj);
     }
     return ret_regions;
 }

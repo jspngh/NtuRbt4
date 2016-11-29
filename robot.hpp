@@ -19,8 +19,13 @@ class Robot
         Server* getServer();
         RobotCoord getCurrentPos();
         void setSpeed(int v);
-        void grip();
+
         void move(RobotCoord c);
+        void rotate_gripper(double angle);
+        void lift(int transport_height, double angle);
+        void place(int drop_height, double angle);
+        void pickAndDrop(double angle);
+
         void goHome();
         void move2side();
         void manualControl();
@@ -37,7 +42,9 @@ class Robot
         int tooltip_length = 102;
         int gripper_height = 80; // approximated
 
-        int part_height = -220;
+        // TODO
+        int object_height = 30;
+        int hover_height = -220;
         int grip_height = -240;
         int picture_x_pos = -140;
 

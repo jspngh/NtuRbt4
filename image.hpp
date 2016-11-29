@@ -22,6 +22,17 @@
 #define SEGMENTATION_THRESHOLD 200
 #define REGION_THRESHOLD 1000
 
+struct Object
+{
+    cv::Point center;
+    double area;
+    double angle;
+    bool operator < (const Object& other) const
+    {
+        return (area < other.area);
+    }
+};
+
 
 class Image
 {
@@ -43,12 +54,13 @@ class Image
 
         void print_debug_info();
         void display_region_metadata();
-        std::vector<std::pair<cv::Point,double>> get_region_metadata();
+        std::vector<Object> get_region_metadata();
         void print_region_metadata();
         cv::Mat get_cvImage_result();
     private:
         // region growing algorithm
         bool grow_region(int k, int j, int i);
 };
+
 
 #endif

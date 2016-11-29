@@ -12,6 +12,8 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 
-std::vector<std::pair<cv::Point,double>> get_objects();
+#include "image.hpp"
+
+std::vector<Object> get_objects();
 
 #endif
