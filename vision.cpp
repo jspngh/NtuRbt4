@@ -1,8 +1,6 @@
-#include <vector>
 
 #include "image.hpp"
 #include "vision.hpp"
-#include "tuple"
 
 using namespace cv;
 using namespace std;
@@ -91,14 +89,14 @@ Mat crop_image(Mat frame)
 }
 
 
-vector<tuple<Point,double>>  process_image(Mat frame)
+vector< pair<Point,double> >  process_image(Mat frame)
 {
     frame = crop_image(frame);
     cvtColor(frame, frame, COLOR_BGR2GRAY);
 
     vector<vector<Point>> contours = find_objects(frame);
 
-    // Draw contours
+    // Make the image binary
     Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
     cv::RNG rng(0);
     for( int i = 0; i< contours.size(); i++ )
@@ -108,7 +106,7 @@ vector<tuple<Point,double>>  process_image(Mat frame)
         Scalar color_black = Scalar(255,255,255);
         drawContours(drawing, contours, i, color_black, CV_FILLED);
     }
-
+    
     erode(drawing, drawing, Mat());
     dilate(drawing, drawing, Mat());
 
@@ -120,14 +118,15 @@ vector<tuple<Point,double>>  process_image(Mat frame)
     processed_img->print_region_metadata();
 
     // visualization of the result
-    processed_img->display_region_metadata();
+    //processed_img->display_region_metadata();
 
     return processed_img->get_region_metadata();
 }
 
 
-void run_vision()
+vector<pair<Point,double>> get_objects()
 {
+    vector<pair<Point,double>> result;
     //process_templates();
 
     //for(int i=1; i <= 10; i++)
@@ -138,21 +137,19 @@ void run_vision()
         //cout << process_image(m).size() << endl;
     //}
 
-    Mat m = imread("test1.png");
-    process_image(m);
+    //Mat m = imread("test1.png");
+    //process_image(m);
 
-    //VideoCapture cap(0);
-    //if(!cap.isOpened()) return -1;
+    VideoCapture cap(0);
+    if(!cap.isOpened()) 
+    {
+        cout << "Could not open external webcam." << endl;
+        return result;
+    }
 
-    //Mat frame_bw, frame;
-    //namedWindow("edges",1);
-    //while(1)
-    //{
-    //cap >> frame; // get a new frame from camera
-    //cvtColor(frame, frame_bw, COLOR_BGR2GRAY);
-    //imshow("edges", frame_bw);
-    //waitKey(1);
-    ////Mat crop = crop_image(frame_bw);
-    ////process_image(crop);
-    //}
+    Mat frame;
+    cap >> frame; 
+    imshow("Image used for processing", frame);
+    waitKey(0);
+    return process_image(frame);
 }
