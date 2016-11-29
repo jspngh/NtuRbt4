@@ -89,6 +89,35 @@ Mat crop_image(Mat frame)
 }
 
 
+vector< pair<Point,double> >  color_process_image(Mat frame)
+{
+    frame = crop_image(frame);
+    vector<Mat> splited_frame;
+    split(frame, splited_frame);
+    Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
+    for (size_t i = 0; i < splited_frame.size(); i++)
+    {
+        threshold(splited_frame[i], splited_frame[i], 150, 255, cv::THRESH_BINARY);
+        vector<vector<Point>> contours = find_objects(splited_frame[i]);
+        Scalar color_black = Scalar(255,255,255);
+        for (int i = 0; i<contours.size(); i++)
+            drawContours(drawing, contours,i, color_black, CV_FILLED);
+    }
+
+    Image *processed_img = new Image(drawing);
+    processed_img->thresholding();
+    processed_img->segmentation();
+    processed_img->find_regions();
+
+    processed_img->print_region_metadata();
+
+    // visualization of the result
+    //processed_img->display_region_metadata();
+
+    return processed_img->get_region_metadata();
+}
+
+
 vector< pair<Point,double> >  process_image(Mat frame)
 {
     frame = crop_image(frame);
@@ -106,7 +135,7 @@ vector< pair<Point,double> >  process_image(Mat frame)
         Scalar color_black = Scalar(255,255,255);
         drawContours(drawing, contours, i, color_black, CV_FILLED);
     }
-    
+
     erode(drawing, drawing, Mat());
     dilate(drawing, drawing, Mat());
 
@@ -134,17 +163,17 @@ vector<pair<Point,double>> get_objects()
         //string path = "res/calib2_" + to_string(i) + ".png";
         //cout << "processing: " << path << endl;
         //Mat m = imread(path);
-        //cout << process_image(m).size() << endl;
+        //cout << color_process_image(m).size() << endl;
     //}
 
-    Mat m = imread("test1.png");
+    Mat m = imread("./test1.png");
     //process_image(m);
 
     //VideoCapture cap(0);
-    //if(!cap.isOpened()) 
+    //if(!cap.isOpened())
     //{
-        //cout << "Could not open external webcam." << endl;
-        //return result;
+    //cout << "Could not open external webcam." << endl;
+    //return result;
     //}
 
     //Mat frame;
@@ -153,5 +182,5 @@ vector<pair<Point,double>> get_objects()
     imshow("Image used for processing", m);
     waitKey(0);
     cv::destroyWindow("Image used for processing");
-    return process_image(m);
+    return color_process_image(m);
 }

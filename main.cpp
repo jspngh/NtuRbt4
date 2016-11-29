@@ -19,10 +19,11 @@ int main(int, char**)
     // The following lines give an example of how to send a command.
     // You can find commends in "Robot Arm Manual.pdf", chap 3, section O-(5)
 
+
     Robot r;
 
     // move robot arm out of the way of the camera
-    r.move2side();
+    //r.move2side();
     
     // run vision
     vector<pair<Point,double>> objects = get_objects();
