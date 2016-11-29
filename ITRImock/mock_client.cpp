@@ -2,6 +2,8 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -16,6 +18,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "4000"
+#define DEFAULT_INTERFACE "wlp2s0"
 
 using namespace std;
 
@@ -27,6 +30,18 @@ void error(string msg)
 
 int main(int argc, char *argv[])
 {
+    // find interface IP address
+    int tmp_sockfd;
+    struct ifreq ifr;
+    tmp_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    // Get an IPv4 IP address
+    ifr.ifr_addr.sa_family = AF_INET;
+    // get IP address of the default network interface
+    strncpy(ifr.ifr_name, DEFAULT_INTERFACE, IFNAMSIZ-1);
+    ioctl(tmp_sockfd, SIOCGIFADDR, &ifr);
+    close(tmp_sockfd);
+    struct in_addr ip_address = ((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr;
+
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
@@ -45,7 +60,7 @@ int main(int argc, char *argv[])
 
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = inet_addr("10.10.6.120");
+    serv_addr.sin_addr = ip_address;
 
     serv_addr.sin_port = htons(portno);
 
