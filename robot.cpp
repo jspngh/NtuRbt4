@@ -74,7 +74,7 @@ void Robot::move(RobotCoord c)
     else
         sockfd = server->openSocket();
 
-    string command = "MOVT " + to_string(c.x) + " " + to_string(c.y) + " " + to_string(c.z);
+    string command = "MOVT " + to_string((int)c.x) + " " + to_string((int)c.y) + " " + to_string((int)c.z);
     const char* movt = command.c_str();
     server->sendCommand(movt, sockfd);
 }

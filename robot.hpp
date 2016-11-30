@@ -48,7 +48,7 @@ class Robot
         int object_height = 30;
         int hover_height = -220;
         int grip_height = -240;
-        int j1_picture_pos = -140;
+        int j1_picture_pos = -100;
 
         void wait_pos_reached(RobotCoord pos);
 };

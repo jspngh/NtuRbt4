@@ -168,6 +168,7 @@ vector<Object> get_objects()
     //Mat m = imread("./test1.png");
     //process_image(m);
 
+    //VideoCapture cap(CV_CAP_VFW);
     VideoCapture cap(1);
     if(!cap.isOpened())
     {
