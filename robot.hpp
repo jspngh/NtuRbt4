@@ -33,7 +33,7 @@ class Robot
         RobotCoord img2robot_v(int x_im, int y_im);
         RobotCoord img2robot_l(int x_im, int y_im);
         RobotCoord img2robot_w(int x_im, int y_im);
-        
+
         Server* server;
 
         int base_height = 252;
@@ -46,7 +46,7 @@ class Robot
         int object_height = 30;
         int hover_height = -220;
         int grip_height = -240;
-        int picture_x_pos = -140;
+        int j1_picture_pos = -140;
 
         void wait_pos_reached(RobotCoord pos);
 };
