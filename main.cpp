@@ -10,9 +10,11 @@ using namespace cv;
 void stack_objects()
 {
     Robot r;
+    r.setSpeed(60);
+    r.resetJoints();
 
     // move robot arm out of the way of the camera
-    r.move2side();
+    //r.move2side();
     
     // run vision
     vector<Object> objects = get_objects();
@@ -32,18 +34,14 @@ void stack_objects()
         cout << endl << "getting object with area: " << it->area << endl;
         // from image coordinate to robot coordinate
         RobotCoord coord = r.img2robot_v(it->center.x, it->center.y);
-        coord.z = r.hover_height + stack_height;
+        //coord.z = r.hover_height + stack_height;
 
         // go to position above objects
         r.move(coord);
 
-        // orient the gripper correctly
-        // TODO 
-        
         // go down to grasp the object 
         // grasp the object
-        r.lift(r.hover_height + stack_height, it->angle);
-        stack_center.z = r.hover_height + stack_height;
+        r.lift(r.hover_height, it->angle);
         r.move(stack_center);
         r.place(r.grip_height + stack_height, stack_angle);
         stack_height += r.object_height;
@@ -59,11 +57,12 @@ void stack_objects()
 void pickup_object()
 {
     Robot r;
-    r.setSpeed(100);
+    r.setSpeed(60);
 
     // move robot arm out of the way of the camera
-    r.move2side();
+    //r.move2side();
     
+    r.resetJoints();
     // run vision
     vector<Object> objects = get_objects();
 
@@ -89,6 +88,8 @@ void pickup_object()
         
         it++;
     }
+
+    r.goHome();
 }
 
 
@@ -96,6 +97,7 @@ int main(int, char**)
 {
     
     //vector<Object> objects = get_objects();
-    pickup_object();
+    //pickup_object();
+    stack_objects();
     return 0;
 }

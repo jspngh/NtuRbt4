@@ -23,7 +23,8 @@ class Robot
         void setSpeed(int v);
 
         void move(RobotCoord c);
-        void rotate_gripper(double angle);
+        void rotateGripper(double angle);
+        void resetJoints();
         void lift(int transport_height, double angle);
         void place(int drop_height, double angle);
         void pickAndDrop(double angle);
@@ -45,9 +46,9 @@ class Robot
         int gripper_height = 80; // approximated
 
         // TODO
-        int object_height = 30;
-        int hover_height = -220;
-        int grip_height = -240;
+        int object_height = 45;
+        int hover_height = 150;
+        int grip_height = -230;
         int j1_picture_pos = -100;
 
         void wait_pos_reached(RobotCoord pos);

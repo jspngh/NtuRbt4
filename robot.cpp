@@ -63,7 +63,12 @@ void Robot::setSpeed(int v)
     string command = "SETLINESPEED " + to_string(v);
     const char* speed = command.c_str();
     server->sendCommand(speed, sockfd);
-    sleep(3);
+
+    // TODO remove hardcoded value
+    command = "SETPTPSPEED 8"; // + to_string(v);
+    speed = command.c_str();
+    server->sendCommand(speed, sockfd);
+    //sleep(3);
 }
 
 void Robot::move(RobotCoord c)
@@ -74,14 +79,56 @@ void Robot::move(RobotCoord c)
     else
         sockfd = server->openSocket();
 
-    string command = "MOVT " + to_string((int)c.x) + " " + to_string((int)c.y) + " " + to_string((int)c.z);
+    string command = "MOVP " + to_string((int)c.x) + " " + to_string((int)c.y) + " " + to_string((int)c.z) + " # # #";
     const char* movt = command.c_str();
     server->sendCommand(movt, sockfd);
 }
 
-void Robot::rotate_gripper(double angle)
+void Robot::rotateGripper(double angle)
 {
-    //TODO
+    angle = angle/3.141592 * 180.0;
+    cout << "angle on image: " << angle << endl;
+    if(angle < 0)
+        angle + 180;
+
+    angle = angle - 90;
+
+    int sockfd;
+    if (server->client_sock > -1)
+        sockfd = server->client_sock;
+    else
+        sockfd = server->openSocket();
+
+    if (angle < -90)
+        angle = angle + 180;
+    else if (angle > 90)
+        angle = angle - 180;
+
+    // manually correcting
+    if (angle < 0)
+        angle = angle - 20;
+    else 
+        angle = angle + 20;
+
+    cout << "angle for robot j6 " << angle << endl;
+
+    string command = "MOVJ # # # # # " + to_string(angle);
+    const char* grip = command.c_str();
+    server->sendCommand(grip, sockfd);
+}
+
+void Robot::resetJoints()
+{
+    int sockfd;
+    if (server->client_sock > -1)
+        sockfd = server->client_sock;
+    else
+        sockfd = server->openSocket();
+
+    string command = "MOVJ 0 45 -45 0 -90 0";
+    const char* grip = command.c_str();
+    server->sendCommand(grip, sockfd);
+    //sleep(3);
 }
 
 void Robot::lift(int transport_height, double angle)
@@ -92,17 +139,17 @@ void Robot::lift(int transport_height, double angle)
     else
         sockfd = server->openSocket();
 
-    rotate_gripper(angle);
+    rotateGripper(angle);
 
-    string command = "MOVT # # " + to_string(grip_height);
+    string command = "MOVP # # " + to_string(grip_height) + " # # #";
     const char* move_down = command.c_str();
     server->sendCommand(move_down, sockfd);
-
+    
     command = "OUTPUT 48 ON";
     const char* close_grip = command.c_str();
     server->sendCommand(close_grip, sockfd);
 
-    command = "MOVT # # " + to_string(transport_height);
+    command = "MOVP # # " + to_string(transport_height) + " # # #";
     const char* move_up = command.c_str();
     server->sendCommand(move_up, sockfd);
 
@@ -116,15 +163,19 @@ void Robot::place(int drop_height, double angle)
     else
         sockfd = server->openSocket();
 
-    rotate_gripper(angle);
+    rotateGripper(angle);
 
-    string command = "MOVT # # " + to_string(drop_height);
+    string command = "MOVP # # " + to_string(drop_height) + " # # #";
     const char* move_down = command.c_str();
     server->sendCommand(move_down, sockfd);
 
     command = "OUTPUT 48 OFF";
     const char* open_grip = command.c_str();
     server->sendCommand(open_grip, sockfd);
+
+    command = "MOVP # # " + to_string(hover_height) + " # # #";
+    const char* move_up = command.c_str();
+    server->sendCommand(move_up, sockfd);
 
 }
 
@@ -156,7 +207,7 @@ void Robot::move2side()
     else
         sockfd = server->openSocket();
 
-    string command = "MOVJ " + to_string(j1_picture_pos) + " # #";
+    string command = "MOVJ " + to_string(j1_picture_pos) + " # # # # #";
     const char* grip = command.c_str();
     server->sendCommand(grip, sockfd);
     sleep(3);
@@ -187,7 +238,7 @@ void Robot::manualControl()
         cout << "Please enter y: " << endl;
         cin >> y;
 
-        string command = "MOVT " + to_string(x) + " " + to_string(y);
+        string command = "MOVP " + to_string(x) + " " + to_string(y) + " # # # #";
         const char* movt = command.c_str();
         server->sendCommand(movt, sockfd);
         sleep(3);
@@ -224,7 +275,7 @@ void Robot::wait_pos_reached(RobotCoord pos)
 
 RobotCoord Robot::img2robot_v(int x_im, int y_im)
 {
-    float a1 = -477;
+    float a1 = -355;
     float a2 = 1.15;
     float a3 = 0.05;
 
@@ -249,7 +300,7 @@ RobotCoord Robot::img2robot_v(int x_im, int y_im)
 
 RobotCoord Robot::img2robot_l(int x_im, int y_im)
 {
-    float a1 = -461.863;
+    float a1 = -351.863;
     float a2 = 1.10843;
     float a3 = 0.08355;
 
@@ -267,8 +318,8 @@ RobotCoord Robot::img2robot_l(int x_im, int y_im)
 RobotCoord Robot::img2robot_w(int x_im, int y_im)
 {
     float a = 1.128;
-    float b = 456.8;
-    float c = 352.2;
+    float b = 477.104;
+    float c = 363.48;
 
     RobotCoord result;
     result.x = x_im * a - b;
