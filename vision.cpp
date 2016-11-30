@@ -111,7 +111,7 @@ vector<Object>  color_process_image(Mat frame)
     processed_img->print_region_metadata();
 
     // visualization of the result
-    //processed_img->display_region_metadata();
+    processed_img->display_region_metadata();
 
     return processed_img->get_region_metadata();
 }
@@ -165,21 +165,21 @@ vector<Object> get_objects()
         //cout << color_process_image(m).size() << endl;
     //}
 
-    Mat m = imread("./test1.png");
+    //Mat m = imread("./test1.png");
     //process_image(m);
 
-    //VideoCapture cap(0);
-    //if(!cap.isOpened())
-    //{
-    //cout << "Could not open external webcam." << endl;
-    //return result;
-    //}
+    VideoCapture cap(1);
+    if(!cap.isOpened())
+    {
+        cout << "Could not open external webcam." << endl;
+        return result;
+    }
 
-    //Mat frame;
-    //cap >> frame; 
+    Mat frame;
+    cap >> frame; 
     cv::namedWindow("Image used for processing");
-    imshow("Image used for processing", m);
+    imshow("Image used for processing", frame);
     waitKey(0);
     cv::destroyWindow("Image used for processing");
-    return color_process_image(m);
+    return color_process_image(frame);
 }

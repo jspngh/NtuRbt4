@@ -93,6 +93,7 @@ void pickup_object()
 
 int main(int, char**)
 {
+    //vector<Object> objects = get_objects();
     stack_objects();
     return 0;
 }
