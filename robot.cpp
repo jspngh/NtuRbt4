@@ -97,7 +97,7 @@ void Robot::lift(int transport_height, double angle)
     string command = "MOVT # # " + to_string(grip_height);
     const char* move_down = command.c_str();
     server->sendCommand(move_down, sockfd);
-    
+
     command = "OUTPUT 48 ON";
     const char* close_grip = command.c_str();
     server->sendCommand(close_grip, sockfd);
@@ -156,7 +156,7 @@ void Robot::move2side()
     else
         sockfd = server->openSocket();
 
-    string command = "MOVT " + to_string(picture_x_pos) + " # " + to_string(hover_height);
+    string command = "MOVJ " + to_string(j1_picture_pos) + " # #";
     const char* grip = command.c_str();
     server->sendCommand(grip, sockfd);
     sleep(3);
