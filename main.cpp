@@ -6,7 +6,6 @@
 using namespace std;
 using namespace cv;
 
-
 void stack_objects()
 {
     Robot r;
@@ -36,12 +35,15 @@ void stack_objects()
         RobotCoord coord = r.img2robot_v(it->center.x, it->center.y);
         //coord.z = r.hover_height + stack_height;
 
+        r.rotateGripper(it->angle);
         // go to position above objects
         r.move(coord);
 
         // go down to grasp the object 
         // grasp the object
         r.lift(r.hover_height, it->angle);
+
+        r.rotateGripper(stack_angle);
         r.move(stack_center);
         r.place(r.grip_height + stack_height, stack_angle);
         stack_height += r.object_height;
@@ -74,6 +76,7 @@ void pickup_object()
         // from image coordinate to robot coordinate
         RobotCoord coord = r.img2robot_v(it->center.x, it->center.y); 
     
+        r.rotateGripper(it->angle);
         // go to position above objects
         r.move(coord);
 
